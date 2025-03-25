@@ -28,8 +28,8 @@ public class SurveyQuestionController {
 		return questionServiceImp.getAllFeedbackSurveyQuestion();
 	}
 	
-	@GetMapping("/SurveyQuestion/{surveyQuestionId}")
-	public SurveyQuestion  getMethodName(@PathVariable Long surveyQuestionId) {
+	@GetMapping("/{surveyQuestionId}")
+	public SurveyQuestion GetQuestionById(@PathVariable Long surveyQuestionId) {
 		return questionServiceImp.getFeedbackSurveyQuestionById(surveyQuestionId);
 	}
 	
