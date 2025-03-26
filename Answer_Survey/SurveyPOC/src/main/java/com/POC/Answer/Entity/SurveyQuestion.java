@@ -20,6 +20,8 @@ public class SurveyQuestion {
 	private String questionText;
 	private Long orderNumber;
 	private  String questionType;
+	
+	
 	public Long getSurveyQuestionId() {
 		return surveyQuestionId;
 	}

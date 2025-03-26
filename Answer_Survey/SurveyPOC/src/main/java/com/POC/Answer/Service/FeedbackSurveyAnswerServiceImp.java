@@ -1,10 +1,12 @@
 package com.POC.Answer.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.POC.Answer.DTO.AnswerDTO;
 import com.POC.Answer.Entity.FeedbackSurveyAnswer;
 import com.POC.Answer.Entity.FeedbackUser;
 import com.POC.Answer.Entity.SurveyQuestion;
@@ -25,13 +27,54 @@ public class FeedbackSurveyAnswerServiceImp implements FeedbackSurveyAnswerServi
 	private FeedbackAnswerRepository feedbackAnswerRepository; 
 	
 	@Override
-	public List<FeedbackSurveyAnswer> getAllFeedbackAnswer() {
-		return feedbackAnswerRepository.findAll();
+	public List<AnswerDTO> getAllFeedbackAnswer() {
+		
+		List<FeedbackSurveyAnswer> answers = feedbackAnswerRepository.findAll();
+	
+		return answers.stream().map(answer -> {
+			var question = questionInterface.GetQuestionById(answer.getSurveyQuestionId());
+			var user = userInterface.getUserById(answer.getFeedbackUserId());
+			
+			return new AnswerDTO(
+					            user != null ? user.getFirstName() : "N/A",
+					            user != null ? user.getLastName() : "N/A",
+					            user != null ? user.getRole() : "N/A",
+					            user != null ? user.getTeamName() : "N/A",
+					            
+					            question != null ? question.getSurveyQuestionId() : null,
+					            question != null ? question.getQuestionText() : "N/A",
+					            
+					            answer.getComments(),
+					            answer.getRating()
+					
+					);
+		}).collect(Collectors.toList());
 	}
 
 	@Override
-	public FeedbackSurveyAnswer getFeedbackAnswerById(Long surveyAnswerId) {
-		return feedbackAnswerRepository.findById(surveyAnswerId).orElse(null);
+	public AnswerDTO getFeedbackAnswerById(Long surveyAnswerId) {
+		FeedbackSurveyAnswer answer =  feedbackAnswerRepository.findById(surveyAnswerId).orElse(null);
+		 
+		if(answer == null) {
+			return null;
+		}
+			var question = questionInterface.GetQuestionById(answer.getSurveyQuestionId());
+			var user = userInterface.getUserById(answer.getFeedbackUserId());
+			
+			return new AnswerDTO(
+					            user != null ? user.getFirstName() : "N/A",
+					            user != null ? user.getLastName() : "N/A",
+					            user != null ? user.getRole() : "N/A",
+					            user != null ? user.getTeamName() : "N/A",
+					            
+					            question != null ? question.getSurveyQuestionId() : null,
+					            question != null ? question.getQuestionText() : "N/A",
+					            
+					            answer.getComments(),
+					            answer.getRating()
+					
+					);
+		
 	}
 
 	@Override

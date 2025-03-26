@@ -20,6 +20,8 @@ public class FeedbackSurveyAnswer {
 		private Integer rating;
 		private Long surveyQuestionId;	
 		private Long feedbackUserId;
+		
+		
 		public Long getSurveyAnswerId() {
 			return surveyAnswerId;
 		}

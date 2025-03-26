@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.POC.Answer.DTO.AnswerDTO;
 import com.POC.Answer.Entity.FeedbackSurveyAnswer;
 import com.POC.Answer.Service.FeedbackSurveyAnswerServiceImp;
 
@@ -24,12 +25,12 @@ public class FeedbackSurveyAnswerController {
 	private FeedbackSurveyAnswerServiceImp answerServiceImp;
 
 	@GetMapping("/all")
-	public List<FeedbackSurveyAnswer> getAllSurveyAnswer() {
+	public List<AnswerDTO> getAllSurveyAnswer() {
 		return answerServiceImp.getAllFeedbackAnswer();
 	}
 
 	@GetMapping("/{surveyAnswerId}")
-	public FeedbackSurveyAnswer getMethodName(@PathVariable Long surveyAnswerId) {
+	public AnswerDTO getMethodName(@PathVariable Long surveyAnswerId) {
 		return answerServiceImp.getFeedbackAnswerById(surveyAnswerId);
 	}
 
