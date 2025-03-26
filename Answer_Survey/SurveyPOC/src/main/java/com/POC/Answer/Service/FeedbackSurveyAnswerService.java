@@ -4,14 +4,15 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.POC.Answer.DTO.AnswerDTO;
 import com.POC.Answer.Entity.FeedbackSurveyAnswer;
 
 @Service
 public interface FeedbackSurveyAnswerService {
 
-	public List<FeedbackSurveyAnswer> getAllFeedbackAnswer();
+	public List<AnswerDTO> getAllFeedbackAnswer();
 	
-	public FeedbackSurveyAnswer getFeedbackAnswerById(Long surveyAnswerId);
+	public AnswerDTO getFeedbackAnswerById(Long surveyAnswerId);
 	
 	public FeedbackSurveyAnswer saveFeedbackSurveyAnswer(FeedbackSurveyAnswer feedbackSurveyAnswer);
 	

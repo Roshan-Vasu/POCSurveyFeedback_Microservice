@@ -33,8 +33,8 @@ public class FeedbackUserController {
 			return Collections.emptyList();
 	}
 	
-	@GetMapping("/Id/{feedbackUserId}")
-	public FeedbackUser  getMethodName(@PathVariable Long feedbackUserId) {
+	@GetMapping("/{feedbackUserId}")
+	public FeedbackUser  getUserById(@PathVariable Long feedbackUserId) {
 		return userService.feedbackUserById(feedbackUserId);
 	}
 	
