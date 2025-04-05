@@ -4,20 +4,26 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.POC.User.DTO.UserDTO;
 import com.POC.User.Entity.FeedbackUser;
+
+import jakarta.validation.Valid;
 
 @Service
 public interface FeedbackUserService {
+	
 
-	public FeedbackUser feedbackUserById(Long feedBackUserId);
+	public UserDTO feedbackUserById(Long feedBackUserId);
 
-	public List<FeedbackUser> getAllFeedbackUsers();
+	public List<UserDTO> getAllFeedbackUsers();
 
-	public FeedbackUser saveFeedbackUser(FeedbackUser feedbackUser);
+	public UserDTO saveFeedbackUser(@Valid UserDTO userDTO);
 
-	public FeedbackUser updateFeedbackUser(FeedbackUser feedbackUser);
+	public UserDTO updateFeedbackUser(@Valid UserDTO userDTO);
 
-	public String deleteFeedbackUser(Long feedBackUserId);
+	public String deleteFeedbackUser(String feedbackUserEmailID);
+	
+	public UserDTO existsByEmailId(String feedbackUserEmailID);
 
 	public boolean validateFeedbackUser(FeedbackUser feedbackUser);
 
