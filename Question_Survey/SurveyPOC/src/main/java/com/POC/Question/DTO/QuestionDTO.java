@@ -1,66 +1,68 @@
-package com.POC.Question.Entity;
+package com.POC.Question.DTO;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Entity
 
-
-public class SurveyQuestion {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long  surveyQuestionId;
+public class QuestionDTO {
+	
+	@NotBlank(message = "Question Cannot be Empty")
 	private String questionText;
+	@NotNull(message = "Please give me a order number of Question")
 	private Long orderNumber;
+	@NotBlank(message = "Please select the Question Type")
 	private  String questionType;
+		
 	
-	
-	
-	
-	public SurveyQuestion() {
+	public QuestionDTO() {
 		super();
 	}
+
 	
-	public SurveyQuestion(Long surveyQuestionId, String questionText, Long orderNumber, String questionType) {
+	public QuestionDTO(@NotBlank(message = "Question Cannot be Empty") String questionText,
+			@NotNull(message = "Please give me a order number of Question") Long orderNumber,
+			@NotBlank(message = "Please select the Question Type") String questionType) {
 		super();
-		this.surveyQuestionId = surveyQuestionId;
 		this.questionText = questionText;
 		this.orderNumber = orderNumber;
 		this.questionType = questionType;
 	}
-	
-	public Long getSurveyQuestionId() {
-		return surveyQuestionId;
-	}
-	public void setSurveyQuestionId(Long surveyQuestionId) {
-		this.surveyQuestionId = surveyQuestionId;
-	}
+
+
+
+
 	public String getQuestionText() {
 		return questionText;
 	}
+
 	public void setQuestionText(String questionText) {
 		this.questionText = questionText;
 	}
+
 	public Long getOrderNumber() {
 		return orderNumber;
 	}
+
 	public void setOrderNumber(Long orderNumber) {
 		this.orderNumber = orderNumber;
 	}
+
 	public String getQuestionType() {
 		return questionType;
 	}
+
 	public void setQuestionType(String questionType) {
 		this.questionType = questionType;
 	}
 	
 	
 	
-
+	
+	
+	
+	
 }

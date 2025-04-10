@@ -1,6 +1,11 @@
 com\POC\Question\Controller\SurveyQuestionController.class
+com\POC\Question\Exception\DuplicateQuestionException.class
+com\POC\Question\Exception\QuestionNotFoundException.class
 com\POC\Question\Entity\SurveyQuestion.class
+com\POC\Question\DTO\QuestionDTO.class
+com\POC\Question\QuestionApplication.class
 com\POC\Question\Repository\SurveyQuestionRepository.class
 com\POC\Question\Service\SurveyQuestionServiceImp.class
-com\POC\Question\SurveyPocApplication.class
 com\POC\Question\Service\SurveyQuestionService.class
+com\POC\Question\Exception\ErrorResponse.class
+com\POC\Question\Exception\GlobleExceptionHandler.class
