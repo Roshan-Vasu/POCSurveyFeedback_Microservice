@@ -15,7 +15,7 @@ public class FeedbackUser {
 	private String firstName;
 	private String lastName;
 	private String emailId;
-	private Long phoneNumber;
+	private String phoneNumber;
 	private String role;
 	private String teamName;
 	private String password;
@@ -26,7 +26,7 @@ public class FeedbackUser {
 	}
 	
 	public FeedbackUser(Long feedbackUserId, String userName, String firstName, String lastName, String emailId,
-			Long phoneNumber, String role, String teamName, String password) {
+			String phoneNumber, String role, String teamName, String password) {
 		super();
 		this.feedbackUserId = feedbackUserId;
 		this.userName = userName;
@@ -79,11 +79,11 @@ public class FeedbackUser {
 		this.emailId = emailId;
 	}
 
-	public Long getPhoneNumber() {
+	public String getPhoneNumber() {
 		return phoneNumber;
 	}
 
-	public void setPhoneNumber(Long phoneNumber) {
+	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
 
