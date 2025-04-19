@@ -7,6 +7,9 @@ import jakarta.validation.constraints.Size;
 
 
 public class UserDTO {
+	
+	@NotBlank(message = "Question Id Cannot be Empty")
+	private Long feedbackUserId;
 
 	@NotBlank(message = "User Name cannot be empty")
 	@Size(min = 3, max = 50, message = "User Name must be between 3 to 10 Character" )

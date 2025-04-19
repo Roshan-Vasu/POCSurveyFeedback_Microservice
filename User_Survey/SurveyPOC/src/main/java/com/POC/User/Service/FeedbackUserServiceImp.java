@@ -2,16 +2,13 @@ package com.POC.User.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.POC.User.DTO.UserDTO;
 import com.POC.User.Entity.FeedbackUser;
 import com.POC.User.Exception.DuplicateResources;
-import com.POC.User.Exception.GlobleExceptionHandler;
 import com.POC.User.Exception.ResourceNotFoundException;
 import com.POC.User.Repository.FeedbackUserRepository;
 

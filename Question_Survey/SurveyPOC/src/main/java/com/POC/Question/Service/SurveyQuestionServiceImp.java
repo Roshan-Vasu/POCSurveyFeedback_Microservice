@@ -1,17 +1,16 @@
 package com.POC.Question.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.aspectj.weaver.patterns.TypePatternQuestions.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.POC.Question.DTO.QuestionDTO;
-import com.POC.Question.Entity.SurveyQuestion;
+import com.POC.Question.Entity.FeedbackQuestion;
+import com.POC.Question.Exception.DuplicateQuestionException;
+import com.POC.Question.Exception.QuestionNotFoundException;
 import com.POC.Question.Repository.SurveyQuestionRepository;
-import com.POC.Question.Exception.*;
 
 
 
@@ -20,12 +19,12 @@ import com.POC.Question.Exception.*;
 public class SurveyQuestionServiceImp implements SurveyQuestionService {
 
 	@Autowired
-	private SurveyQuestionRepository surveyQuestionRepository;
+	private SurveyQuestionRepository questionRepo;
 	
-	private QuestionDTO entityToDTO(SurveyQuestion question) {
+	private QuestionDTO entityToDTO(FeedbackQuestion question) {
 		
 		QuestionDTO dto = new QuestionDTO();
-		
+		dto.setQuestionId(question.getSurveyQuestionId());
 		dto.setOrderNumber(question.getOrderNumber());
 		dto.setQuestionText(question.getQuestionText());
 		dto.setQuestionType(question.getQuestionType());
@@ -33,10 +32,11 @@ public class SurveyQuestionServiceImp implements SurveyQuestionService {
 		return dto;
 	}
 	
-	private SurveyQuestion dtoToEntity(QuestionDTO dto) {
+	private FeedbackQuestion dtoToEntity(QuestionDTO dto) {
 		
-		SurveyQuestion question = new SurveyQuestion();
+		FeedbackQuestion question = new FeedbackQuestion();
 		
+		question.setSurveyQuestionId(dto.getQuestionId());
 		question.setOrderNumber(dto.getOrderNumber());
 		question.setQuestionText(dto.getQuestionText());
 		question.setQuestionType(dto.getQuestionType());
@@ -48,7 +48,7 @@ public class SurveyQuestionServiceImp implements SurveyQuestionService {
 	@Override
 	public List<QuestionDTO> getAllFeedbackSurveyQuestion() {
 		
-		List<SurveyQuestion> question = surveyQuestionRepository.findAll();
+		List<FeedbackQuestion> question = questionRepo.findAll();
 		
 		if(question.isEmpty()) {
 			 throw new QuestionNotFoundException("No Questions Found!");
@@ -56,16 +56,18 @@ public class SurveyQuestionServiceImp implements SurveyQuestionService {
 		
 		    return question.stream()
 		    	.map(q -> new QuestionDTO(
-		    				q.getQuestionText(),
-		    				q.getOrderNumber(),
-		    				q.getQuestionType()))
-		    		.collect(Collectors.toList());
+		    			q.getQuestionText(),
+		    			q.getOrderNumber(),
+		    			q.getQuestionType(),
+		    			q.getSurveyQuestionId()))
+		    	.collect(Collectors.toList());
+		    	
 	}
 
 	@Override
 	public QuestionDTO getFeedbackSurveyQuestionById(Long SurveyQuestionId) {
 		
-		SurveyQuestion question =  surveyQuestionRepository.findById(SurveyQuestionId)
+		FeedbackQuestion question =  questionRepo.findById(SurveyQuestionId)
 				.orElseThrow(()-> new QuestionNotFoundException("Question not found with ID: " + SurveyQuestionId));
 
 		return entityToDTO(question);
@@ -74,42 +76,46 @@ public class SurveyQuestionServiceImp implements SurveyQuestionService {
 	@Override
 	public QuestionDTO addFeedbackSurveyQuestion (QuestionDTO surveyQuestion) {
 		
-		SurveyQuestion entityQuestion = dtoToEntity(surveyQuestion);
+		FeedbackQuestion entityQuestion = dtoToEntity(surveyQuestion);
 		
-		surveyQuestionRepository.findByQuestionText(entityQuestion.getQuestionText())
+		questionRepo.findByQuestionText(entityQuestion.getQuestionText())
 		.ifPresent(existingQuestion -> {
-			throw new DuplicateQuestionException("Survey Question is Already Exists " + existingQuestion.getQuestionText());
+			throw new DuplicateQuestionException(String.format("Survey Question is Already Exists: \"%s\"", entityQuestion.getQuestionText()));
 		});
 		
-		return entityToDTO(surveyQuestionRepository.save(entityQuestion));
+		return entityToDTO(questionRepo.save(entityQuestion));
 	}
 
 	@Override
 	public QuestionDTO updateFeedbackSurveyQuestion(QuestionDTO surveyQuestion) {
 		
-		SurveyQuestion sQuestion = dtoToEntity(surveyQuestion);
+		FeedbackQuestion sQuestion = dtoToEntity(surveyQuestion);
 		
-		surveyQuestionRepository.findByQuestionText(sQuestion.getQuestionText())
+		questionRepo.findById(sQuestion.getSurveyQuestionId())
 			.orElseThrow(()-> new QuestionNotFoundException("Survey Question or Question Id is not found " + sQuestion.getSurveyQuestionId()));
-		
-		
-		return entityToDTO(surveyQuestionRepository.save(sQuestion));
+		return entityToDTO(questionRepo.save(sQuestion));
 	}
 
 	@Override
-	public SurveyQuestion deleteFeedbackSurveyQuestion(Long surveyQuestionID) {
-		SurveyQuestion surveyQuestionData =  surveyQuestionRepository.findById(surveyQuestionID).orElse(null);
+	public QuestionDTO deleteFeedbackSurveyQuestion(Long surveyQuestionID) {
+		FeedbackQuestion surveyQuestionData =  questionRepo.findById(surveyQuestionID).orElse(null);
 		if(surveyQuestionData != null) {
-			surveyQuestionRepository.delete(surveyQuestionData);
-			return surveyQuestionData;
+			questionRepo.delete(surveyQuestionData);
+			return entityToDTO(surveyQuestionData);
 		} else {
 			return null;
 		}	
 	}
 
 	@Override
-	public SurveyQuestion getFeedbackSurveyQuestionByFeedbackSurveyIdandOrderNo(Long SurveyQuestionId, Long OrderNo) {
-		return surveyQuestionRepository.findBySurveyQuestionIdAndOrderNumber(SurveyQuestionId, OrderNo);	
+	public QuestionDTO getFeedbackSurveyQuestionByFeedbackSurveyIdandOrderNo(Long SurveyQuestionId, Long OrderNo) {
+		
+		FeedbackQuestion question = questionRepo.findBySurveyQuestionIdAndOrderNumber(SurveyQuestionId, OrderNo);
+		
+		if(question == null) {
+			 throw new QuestionNotFoundException("Question Not found with ID: "+ SurveyQuestionId + " Order No: "+ OrderNo);
+		}
+		return entityToDTO(question);	
 	}
 
 	

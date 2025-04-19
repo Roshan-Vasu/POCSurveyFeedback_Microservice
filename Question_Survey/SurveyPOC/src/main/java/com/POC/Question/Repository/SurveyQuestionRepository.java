@@ -1,16 +1,16 @@
 package com.POC.Question.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import com.POC.Question.Entity.SurveyQuestion;
+import com.POC.Question.Entity.FeedbackQuestion;
 
-public interface SurveyQuestionRepository extends JpaRepository<SurveyQuestion, Long> {
+@Repository
+public interface SurveyQuestionRepository extends JpaRepository<FeedbackQuestion, Long> {
 
-    SurveyQuestion findBySurveyQuestionIdAndOrderNumber(Long surveyQuestionId, Long orderNumber);
+    FeedbackQuestion findBySurveyQuestionIdAndOrderNumber(Long surveyQuestionId, Long orderNumber);
 
-	List<SurveyQuestion> getAllFeedbackSurveyQuestion();
-	Optional<SurveyQuestion> findByQuestionText(String questionText);
+	Optional<FeedbackQuestion> findByQuestionText(String questionText);
 }

@@ -4,23 +4,23 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.POC.Answer.DTO.AnswerDTO;
-import com.POC.Answer.Entity.FeedbackSurveyAnswer;
+import com.POC.Answer.DTO.AnswerRequestDTO;
+import com.POC.Answer.DTO.AnswerResponseDTO;
 
 @Service
 public interface FeedbackSurveyAnswerService {
 
-	public List<AnswerDTO> getAllFeedbackAnswer();
+	public List<AnswerResponseDTO> getAllFeedbackAnswer();
 	
-	public AnswerDTO getFeedbackAnswerById(Long surveyAnswerId);
+	public AnswerResponseDTO getFeedbackAnswerById(Long surveyAnswerId);
 	
-	public FeedbackSurveyAnswer saveFeedbackSurveyAnswer(FeedbackSurveyAnswer feedbackSurveyAnswer);
+	public AnswerResponseDTO saveFeedbackSurveyAnswer(AnswerRequestDTO requestDTO);
 	
-	public FeedbackSurveyAnswer updateFeedbackSurveyAnswer(FeedbackSurveyAnswer feedbackSurveyAnswer);
+	public AnswerResponseDTO updateFeedbackSurveyAnswer(AnswerRequestDTO requestDTO);
 	
-	public String deleteFeedbackSurveyAnswer(Long surveyAnswerId);
+	public AnswerResponseDTO deleteFeedbackSurveyAnswer(Long surveyAnswerId);
 	
-	public List<FeedbackSurveyAnswer> getFeedbackAnswerByFeedbackSurveyQuestionId(Long surveyQuestionId );
+	public List<AnswerResponseDTO> getFeedbackAnswerByFeedbackSurveyQuestionId(Long surveyQuestionId );
 	
-	public List<FeedbackSurveyAnswer> getFeedbankAnswerByFeedbackSurveyQuestionIdAndFeedbackUserId(Long surveyQuestionId,  Long feedbackUserId);
+	public List<AnswerResponseDTO> getFeedbankAnswerByFeedbackSurveyQuestionIdAndFeedbackUserId(Long surveyQuestionId,  Long feedbackUserId);
 }
