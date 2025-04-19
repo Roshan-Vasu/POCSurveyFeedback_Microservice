@@ -2,14 +2,12 @@ package com.POC.Question.DTO;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 public class QuestionDTO {
 	
+	@NotBlank(message = "Question Id Cannot be Empty")
+	private Long questionId;
 	@NotBlank(message = "Question Cannot be Empty")
 	private String questionText;
 	@NotNull(message = "Please give me a order number of Question")
@@ -25,11 +23,13 @@ public class QuestionDTO {
 	
 	public QuestionDTO(@NotBlank(message = "Question Cannot be Empty") String questionText,
 			@NotNull(message = "Please give me a order number of Question") Long orderNumber,
-			@NotBlank(message = "Please select the Question Type") String questionType) {
+			@NotBlank(message = "Please select the Question Type") String questionType,
+			@NotBlank(message = "Please select the Question Id") Long questionId) {
 		super();
 		this.questionText = questionText;
 		this.orderNumber = orderNumber;
 		this.questionType = questionType;
+		this.questionId = questionId;
 	}
 
 
@@ -59,10 +59,13 @@ public class QuestionDTO {
 		this.questionType = questionType;
 	}
 	
+	public Long getQuestionId() {
+		return questionId;
+	}
 	
-	
-	
-	
+	public void setQuestionId(Long questionId) {
+		this.questionId = questionId;
+	}
 	
 	
 }

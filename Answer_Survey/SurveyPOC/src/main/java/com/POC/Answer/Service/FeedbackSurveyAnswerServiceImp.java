@@ -6,125 +6,238 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.POC.Answer.DTO.AnswerDTO;
-import com.POC.Answer.Entity.FeedbackSurveyAnswer;
-import com.POC.Answer.Entity.FeedbackUser;
-import com.POC.Answer.Entity.SurveyQuestion;
+import com.POC.Answer.DTO.AnswerRequestDTO;
+import com.POC.Answer.DTO.AnswerResponseDTO;
+import com.POC.Answer.DTO.QuestionDTO;
+import com.POC.Answer.DTO.UserDTO;
+import com.POC.Answer.Entity.FeedbackAnswer;
+import com.POC.Answer.Exception.ResourceNotFoundException;
 import com.POC.Answer.Repository.FeedbackAnswerRepository;
 import com.POC.Answer.feign.QuestionInterface;
 import com.POC.Answer.feign.UserInterface;
 
+import feign.FeignException;
+
 @Service
 public class FeedbackSurveyAnswerServiceImp implements FeedbackSurveyAnswerService {
 
-	@Autowired
-	QuestionInterface questionInterface;
-	
-	@Autowired
-	UserInterface userInterface;
-	
-	@Autowired
-	private FeedbackAnswerRepository feedbackAnswerRepository; 
-	
-	@Override
-	public List<AnswerDTO> getAllFeedbackAnswer() {
-		
-		List<FeedbackSurveyAnswer> answers = feedbackAnswerRepository.findAll();
-	
-		return answers.stream().map(answer -> {
-			var question = questionInterface.GetQuestionById(answer.getSurveyQuestionId());
-			var user = userInterface.getUserById(answer.getFeedbackUserId());
-			
-			return new AnswerDTO(
-					            user != null ? user.getFirstName() : "N/A",
-					            user != null ? user.getLastName() : "N/A",
-					            user != null ? user.getRole() : "N/A",
-					            user != null ? user.getTeamName() : "N/A",
-					            
-					            question != null ? question.getSurveyQuestionId() : null,
-					            question != null ? question.getQuestionText() : "N/A",
-					            
-					            answer.getComments(),
-					            answer.getRating()
-					
-					);
-		}).collect(Collectors.toList());
-	}
+    @Autowired
+    private QuestionInterface questionInterface;
 
-	@Override
-	public AnswerDTO getFeedbackAnswerById(Long surveyAnswerId) {
-		FeedbackSurveyAnswer answer =  feedbackAnswerRepository.findById(surveyAnswerId).orElse(null);
-		 
-		if(answer == null) {
-			return null;
-		}
-			var question = questionInterface.GetQuestionById(answer.getSurveyQuestionId());
-			var user = userInterface.getUserById(answer.getFeedbackUserId());
-			
-			return new AnswerDTO(
-					            user != null ? user.getFirstName() : "N/A",
-					            user != null ? user.getLastName() : "N/A",
-					            user != null ? user.getRole() : "N/A",
-					            user != null ? user.getTeamName() : "N/A",
-					            
-					            question != null ? question.getSurveyQuestionId() : null,
-					            question != null ? question.getQuestionText() : "N/A",
-					            
-					            answer.getComments(),
-					            answer.getRating()
-					
-					);
-		
-	}
+    @Autowired
+    private UserInterface userInterface;
 
-	@Override
-	public FeedbackSurveyAnswer saveFeedbackSurveyAnswer(FeedbackSurveyAnswer feedbackSurveyAnswer) {
-		
-		SurveyQuestion question = questionInterface.GetQuestionById(feedbackSurveyAnswer.getSurveyQuestionId());
-		
-		FeedbackUser user = userInterface.getUserById(feedbackSurveyAnswer.getFeedbackUserId());
-		
-		if (user != null) {
-			if (question != null) {
-				return feedbackAnswerRepository.save(feedbackSurveyAnswer);
-			} else {
-				throw new RuntimeException("Invalid Question ID");
-			}
+    @Autowired
+    private FeedbackAnswerRepository feedbackAnswerRepository;
 
-		} else {
-			throw new RuntimeException("Invalid User ID");
-		}
+    
+    
+    @Override
+    public List<AnswerResponseDTO> getAllFeedbackAnswer() {
+    	
+        List<FeedbackAnswer> answers = feedbackAnswerRepository.findAll();
 
-		
-		
-		
-	}
+        return answers.stream().map(answer -> {
+            QuestionDTO question = questionInterface.GetQuestionById(answer.getSurveyQuestionId());
+            
+            if (question == null) {
+                throw new ResourceNotFoundException("Question not found for ID: " + answer.getSurveyQuestionId());
+            }
 
-	@Override
-	public FeedbackSurveyAnswer updateFeedbackSurveyAnswer(FeedbackSurveyAnswer feedbackSurveyAnswer) {
-		return feedbackAnswerRepository.save(feedbackSurveyAnswer);
-	}
+            UserDTO user = userInterface.getUserById(answer.getFeedbackUserId());
+            if (user == null) {
+                throw new ResourceNotFoundException("User not found for ID: " + answer.getFeedbackUserId());
+            }
 
-	@Override
-	public String deleteFeedbackSurveyAnswer(Long surveyAnswerId) {
-		
-		if(feedbackAnswerRepository.existsById(surveyAnswerId)) {
-				feedbackAnswerRepository.deleteById(surveyAnswerId);
-				return "Answer Deleted Successfully";
-		} else {
-			return "Answer cannot be deleted or Someting worng";
-		}
-	}
+            return new AnswerResponseDTO(
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getRole(),
+                    user.getTeamName(),
+                    question.getQuestionId(),
+                    question.getQuestionText(),
+                    answer.getComments(),
+                    answer.getRating()
+            );
+        }).collect(Collectors.toList());
+    }
 
-	@Override
-	public List<FeedbackSurveyAnswer> getFeedbackAnswerByFeedbackSurveyQuestionId(Long surveyQuestionId) {
-		return feedbackAnswerRepository.findBySurveyQuestionId(surveyQuestionId);
-	}
+    @Override
+    public AnswerResponseDTO getFeedbackAnswerById(Long surveyAnswerId) {
+    	
+        FeedbackAnswer answer = feedbackAnswerRepository.findById(surveyAnswerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with id: " + surveyAnswerId));
 
-	@Override
-	public List<FeedbackSurveyAnswer> getFeedbankAnswerByFeedbackSurveyQuestionIdAndFeedbackUserId(
-			Long surveyQuestionId, Long feedbackUserId) {
-	
-		return feedbackAnswerRepository.findBySurveyQuestionIdAndFeedbackUserId(surveyQuestionId, feedbackUserId);
-	}
+        QuestionDTO question = questionInterface.GetQuestionById(answer.getSurveyQuestionId());
+        if (question == null) {
+            throw new ResourceNotFoundException("Question not found for ID: " + answer.getSurveyQuestionId());
+        }
+
+        UserDTO user = userInterface.getUserById(answer.getFeedbackUserId());
+        if (user == null) {
+            throw new ResourceNotFoundException("User not found for ID: " + answer.getFeedbackUserId());
+        }
+
+        return new AnswerResponseDTO(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getRole(),
+                user.getTeamName(),
+                question.getQuestionId(),
+                question.getQuestionText(),
+                answer.getComments(),
+                answer.getRating()
+        );
+        
+        
+    }
+
+    @Override
+    public AnswerResponseDTO saveFeedbackSurveyAnswer(AnswerRequestDTO requestDTO) {
+    	QuestionDTO question;
+        try {
+            question = questionInterface.GetQuestionById(requestDTO.getSurveyQuestionId());
+        } catch (FeignException.NotFound ex) {
+            throw new ResourceNotFoundException("Question not found with ID: " + requestDTO.getSurveyQuestionId());
+        }
+
+        UserDTO user;
+        try {
+            user = userInterface.getUserById(requestDTO.getFeedbackUserId());
+        } catch (FeignException.NotFound ex) {
+            throw new ResourceNotFoundException("User not found with ID: " + requestDTO.getFeedbackUserId());
+        }
+
+        FeedbackAnswer answer = new FeedbackAnswer();
+        answer.setSurveyQuestionId(requestDTO.getSurveyQuestionId());
+        answer.setFeedbackUserId(requestDTO.getFeedbackUserId());
+        answer.setComments(requestDTO.getComments());
+        answer.setRating(requestDTO.getRating());
+
+        FeedbackAnswer savedAnswer = feedbackAnswerRepository.save(answer);
+
+        return new AnswerResponseDTO(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getRole(),
+                user.getTeamName(),
+                question.getQuestionId(),
+                question.getQuestionText(),
+                savedAnswer.getComments(),
+                savedAnswer.getRating()
+        );
+    }
+
+    @Override
+    public AnswerResponseDTO updateFeedbackSurveyAnswer(AnswerRequestDTO requestDTO) {
+        FeedbackAnswer existingAnswer = feedbackAnswerRepository.findById(requestDTO.getSurveyAnswerId())
+                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with ID: " + requestDTO.getSurveyAnswerId()));
+
+        QuestionDTO question = questionInterface.GetQuestionById(requestDTO.getSurveyQuestionId());
+        if (question == null) {
+            throw new ResourceNotFoundException("Invalid Question ID");
+        }
+
+        UserDTO user = userInterface.getUserById(requestDTO.getFeedbackUserId());
+        if (user == null) {
+            throw new ResourceNotFoundException("Invalid User ID");
+        }
+
+        existingAnswer.setSurveyQuestionId(requestDTO.getSurveyQuestionId());
+        existingAnswer.setFeedbackUserId(requestDTO.getFeedbackUserId());
+        existingAnswer.setComments(requestDTO.getComments());
+        existingAnswer.setRating(requestDTO.getRating());
+
+        FeedbackAnswer updatedAnswer = feedbackAnswerRepository.save(existingAnswer);
+
+        return new AnswerResponseDTO(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getRole(),
+                user.getTeamName(),
+                question.getQuestionId(),
+                question.getQuestionText(),
+                updatedAnswer.getComments(),
+                updatedAnswer.getRating()
+        );
+    }
+
+    @Override
+    public AnswerResponseDTO deleteFeedbackSurveyAnswer(Long surveyAnswerId) {
+    	
+    	 FeedbackAnswer answer = feedbackAnswerRepository.findById(surveyAnswerId)
+    			 .orElseThrow(() -> new ResourceNotFoundException("Answer Not Found with this id " + surveyAnswerId));
+    	
+        UserDTO user = userInterface.getUserById(answer.getFeedbackUserId());
+        QuestionDTO question = questionInterface.GetQuestionById(answer.getSurveyQuestionId());
+       
+        feedbackAnswerRepository.deleteById(surveyAnswerId);
+
+        return new AnswerResponseDTO(
+                user.getFirstName(),
+                user.getLastName(),
+                user.getRole(),
+                user.getTeamName(),
+                question.getQuestionId(),
+                question.getQuestionText(),
+                answer.getComments(),
+                answer.getRating()
+        );
+    }
+
+    @Override
+    public List<AnswerResponseDTO> getFeedbackAnswerByFeedbackSurveyQuestionId(Long surveyQuestionId) {
+        List<FeedbackAnswer> answers = feedbackAnswerRepository.findBySurveyQuestionId(surveyQuestionId);
+        
+        return answers.stream().map(answer -> {
+            QuestionDTO question = questionInterface.GetQuestionById(answer.getSurveyQuestionId());
+            if (question == null) {
+                throw new ResourceNotFoundException("Question not found for ID: " + answer.getSurveyQuestionId());
+            }
+
+            UserDTO user = userInterface.getUserById(answer.getFeedbackUserId());
+            if (user == null) {
+                throw new ResourceNotFoundException("User not found for ID: " + answer.getFeedbackUserId());
+            }
+
+            return new AnswerResponseDTO(
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getRole(),
+                    user.getTeamName(),
+                    question.getQuestionId(),
+                    question.getQuestionText(),
+                    answer.getComments(),
+                    answer.getRating()
+            );
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AnswerResponseDTO> getFeedbankAnswerByFeedbackSurveyQuestionIdAndFeedbackUserId(Long surveyQuestionId, Long feedbackUserId) {
+        List<FeedbackAnswer> answers = feedbackAnswerRepository.findBySurveyQuestionIdAndFeedbackUserId(surveyQuestionId, feedbackUserId);
+        
+        return answers.stream().map(answer -> {
+            QuestionDTO question = questionInterface.GetQuestionById(answer.getSurveyQuestionId());
+            if (question == null) {
+                throw new ResourceNotFoundException("Question not found for ID: " + answer.getSurveyQuestionId());
+            }
+
+            UserDTO user = userInterface.getUserById(answer.getFeedbackUserId());
+            if (user == null) {
+                throw new ResourceNotFoundException("User not found for ID: " + answer.getFeedbackUserId());
+            }
+
+            return new AnswerResponseDTO(
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getRole(),
+                    user.getTeamName(),
+                    question.getQuestionId(),
+                    question.getQuestionText(),
+                    answer.getComments(),
+                    answer.getRating()
+            );
+        }).collect(Collectors.toList());
+    }
 }

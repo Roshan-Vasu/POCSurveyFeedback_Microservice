@@ -3,6 +3,7 @@ package com.POC.Answer.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,54 +13,48 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.POC.Answer.DTO.AnswerDTO;
-import com.POC.Answer.Entity.FeedbackSurveyAnswer;
+import com.POC.Answer.DTO.AnswerRequestDTO;
+import com.POC.Answer.DTO.AnswerResponseDTO;
 import com.POC.Answer.Service.FeedbackSurveyAnswerServiceImp;
 
 @RestController
-
 @RequestMapping("/api/surveyanswer")
 public class FeedbackSurveyAnswerController {
 
-	@Autowired
-	private FeedbackSurveyAnswerServiceImp answerServiceImp;
+    @Autowired
+    private FeedbackSurveyAnswerServiceImp answerServiceImp;
 
-	@GetMapping("/all")
-	public List<AnswerDTO> getAllSurveyAnswer() {
-		return answerServiceImp.getAllFeedbackAnswer();
-	}
+   
 
-	@GetMapping("/{surveyAnswerId}")
-	public AnswerDTO getMethodName(@PathVariable Long surveyAnswerId) {
-		return answerServiceImp.getFeedbackAnswerById(surveyAnswerId);
-	}
+    @GetMapping("/all")
+    public ResponseEntity<List<AnswerResponseDTO>> getAllSurveyAnswer() {
+    	
+    	List <AnswerResponseDTO> dto = answerServiceImp.getAllFeedbackAnswer();
+        return ResponseEntity.ok(dto);
+    }
 
-	@PostMapping("/saveSurveyAnswer")
-	public FeedbackSurveyAnswer saveSurveyAnswer(@RequestBody FeedbackSurveyAnswer feedbackSurveyAnswer) {
-		return answerServiceImp.saveFeedbackSurveyAnswer(feedbackSurveyAnswer);
-	}
+    @GetMapping("/{surveyAnswerId}")
+    public ResponseEntity<AnswerResponseDTO > getSurveyAnswerById(@PathVariable Long surveyAnswerId) {
+    	AnswerResponseDTO dto =	answerServiceImp.getFeedbackAnswerById(surveyAnswerId);
+    	return ResponseEntity.ok(dto);
+    }
 
-	@PutMapping("/updateSurveyAnswer")
-	public FeedbackSurveyAnswer upateSurveyAnswer(@RequestBody FeedbackSurveyAnswer feedbackSurveyAnswer) {
-		return answerServiceImp.updateFeedbackSurveyAnswer(feedbackSurveyAnswer);
-	}
+    @PostMapping("/saveSurveyAnswer")
+    public ResponseEntity<AnswerResponseDTO>  saveSurveyAnswer(@RequestBody AnswerRequestDTO answerRequestDTO) {
+    		
+    	AnswerResponseDTO dto =	answerServiceImp.saveFeedbackSurveyAnswer(answerRequestDTO);
+        return ResponseEntity.ok(dto);
+    }
 
-	@DeleteMapping("/deleteServeyAnswer/{surveyAnswerId}")
-	public String deleteFeedbackSurveyAnswer(@PathVariable Long surveyAnswerId) {
-		return answerServiceImp.deleteFeedbackSurveyAnswer(surveyAnswerId);
-	}
+    @PutMapping("/updateSurveyAnswer")
+    public ResponseEntity<AnswerResponseDTO> updateSurveyAnswer(@RequestBody AnswerRequestDTO answerRequestDTO) {
+        AnswerResponseDTO dto = answerServiceImp.updateFeedbackSurveyAnswer(answerRequestDTO);
+        return ResponseEntity.ok(dto);
+    }
 
-	@GetMapping("/QuestionId/{questionId}")
-	public List<FeedbackSurveyAnswer> getSurveyAnswerByQuestionID(@PathVariable Long questionId) {
-		return answerServiceImp.getFeedbackAnswerByFeedbackSurveyQuestionId(questionId);
-	}
-
-	@GetMapping("/QuestionId/{questionId}/UserId/{userId}")
-	public List<FeedbackSurveyAnswer> getSurveyAnswerByQuestionIDAndUserId(
-			@PathVariable Long questionId, @PathVariable Long userId) {
-		
-		return answerServiceImp.getFeedbankAnswerByFeedbackSurveyQuestionIdAndFeedbackUserId(questionId,
-				userId);
-	}
-
+    @DeleteMapping("/deleteSurveyAnswer/{surveyAnswerId}")
+    public ResponseEntity<AnswerResponseDTO> deleteFeedbackSurveyAnswer(@PathVariable Long surveyAnswerId) {
+        AnswerResponseDTO dto = answerServiceImp.deleteFeedbackSurveyAnswer(surveyAnswerId);
+        return ResponseEntity.ok(dto);
+    }
 }

@@ -13,7 +13,7 @@ import jakarta.validation.Valid;
 public interface FeedbackUserService {
 	
 
-	public UserDTO feedbackUserById(Long feedBackUserId);
+	public UserDTO feedbackUserById(@Valid Long feedBackUserId);
 
 	public List<UserDTO> getAllFeedbackUsers();
 
@@ -21,10 +21,10 @@ public interface FeedbackUserService {
 
 	public UserDTO updateFeedbackUser(@Valid UserDTO userDTO);
 
-	public String deleteFeedbackUser(String feedbackUserEmailID);
+	public String deleteFeedbackUser(@Valid String feedbackUserEmailID);
 	
-	public UserDTO existsByEmailId(String feedbackUserEmailID);
+	public UserDTO existsByEmailId(@Valid String feedbackUserEmailID);
 
-	public boolean validateFeedbackUser(FeedbackUser feedbackUser);
+	public boolean validateFeedbackUser(@Valid FeedbackUser feedbackUser);
 
 }

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.POC.User.DTO.UserDTO;
@@ -34,7 +33,7 @@ public class FeedbackUserController {
 	}
 	
 	@GetMapping("/{feedbackUserId}")
-	public ResponseEntity<UserDTO>  getUserById(@PathVariable Long feedbackUserId) {
+	public ResponseEntity<UserDTO>  getUserById(@PathVariable @Valid Long feedbackUserId) {
 		
 		return new ResponseEntity<>(userService.feedbackUserById(feedbackUserId),HttpStatus.OK); 
 		
@@ -60,13 +59,13 @@ public class FeedbackUserController {
 	}
 
 	@DeleteMapping("/delete/{feedbackUserEmailID}")
-	public String deleteUser(@PathVariable String feedbackUserEmailID) {
+	public String deleteUser(@PathVariable @Valid String feedbackUserEmailID) {
 		return userService.deleteFeedbackUser(feedbackUserEmailID);
 			
 	}
 	
 	@GetMapping("/usermail/{feedbackUserEmailID}")
-	public ResponseEntity<UserDTO> getUserByEmailID(@PathVariable String feedbackUserEmailID){
+	public ResponseEntity<UserDTO> getUserByEmailID(@PathVariable @Valid String feedbackUserEmailID){
 		
 		UserDTO user = userService.existsByEmailId(feedbackUserEmailID);
 		

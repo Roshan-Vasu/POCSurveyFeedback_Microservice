@@ -5,11 +5,11 @@ import java.util.Date;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobleExceptionHandler {
 
 	@ExceptionHandler(QuestionNotFoundException.class)
@@ -21,7 +21,7 @@ public class GlobleExceptionHandler {
 	@ExceptionHandler(DuplicateQuestionException.class)
 	public ResponseEntity<ErrorResponse> handleDuplicateQuestion(DuplicateQuestionException ex, WebRequest request){
 		ErrorResponse error = new ErrorResponse(new Date(), ex.getMessage(), request.getDescription(false) );
-		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(error, HttpStatus.CONFLICT);
 	}
 	
 	
